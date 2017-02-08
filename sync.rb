@@ -19,6 +19,13 @@ def eventbrite_attendees
 end
 
 eventbrite_attendees.each do |a|
-  next if a.cancelled
+  next if a.cancelled # TODO: remove new cancelations
+
+  puts a.id
   puts a.profile.name
+  puts a.costs.base_price.display
+  puts a.answers[0].answer # arrival day
+  puts a.ticket_class_name # sleeping type
+  puts a.answers[2].answer # shirt size
+  puts '----------'
 end
