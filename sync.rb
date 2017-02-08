@@ -4,6 +4,8 @@ require 'pry'
 require 'dotenv'
 Dotenv.load
 
+drive_session = GoogleDrive::Session.from_config('config.json')
+
 def eventbrite_attendees
   # Get all attendees
   Eventbrite.token = ENV['EVENTBRITE_ACCESS_TOKEN']
@@ -16,6 +18,14 @@ def eventbrite_attendees
   end
 
   all_attendees
+end
+
+def spreadsheet
+  drive_session.spreadsheet_by_key(ENV['DRIVE_SPREADSHEET_ID'])
+end
+
+def people
+  spreadsheet.worksheet_by_title('People')
 end
 
 eventbrite_attendees.each do |a|
