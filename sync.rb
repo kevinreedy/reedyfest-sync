@@ -96,9 +96,21 @@ eventbrite_attendees.each do |a|
   end
 
   people_sheet[attendee, people_name_column] = a.profile.name
-  people_sheet[attendee, people_sleeping_type_column] = a.ticket_class_name # TODO: group camping
-  people_sheet[attendee, people_nights_column] = a.answers[0].answer # TODO: 2/3 instead of arrival day
   people_sheet[attendee, people_shirt_size_column] = a.answers[2].answer
+
+  if a.ticket_class_name == 'Camping Thursday - Sunday' || a.ticket_class_name == 'Camping Friday - Sunday'
+    people_sheet[attendee, people_sleeping_type_column] = 'Camping'
+  else
+    people_sheet[attendee, people_sleeping_type_column] = a.ticket_class_name
+  end
+
+  if a.answers[0].answer == 'Thursday'
+    people_sheet[attendee, people_nights_column] = '3'
+  elsif a.answers[0].answer == 'Friday'
+    people_sheet[attendee, people_nights_column] = '2'
+  else
+    people_sheet[attendee, people_nights_column] = '?'
+  end
 
   # Add Payments
   next if a.costs.base_price.value == 0
