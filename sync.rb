@@ -79,7 +79,7 @@ def money_eventbrite_column
 end
 
 def money_first_empty_row
-  (1..money_sheet.num_rows).find { |n| money_sheet[n, money_eventbrite_column] == '' }
+  (1..money_sheet.num_rows).find { |n| money_sheet[n, money_date_column] == '' }
 end
 
 # Main Loop
