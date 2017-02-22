@@ -53,6 +53,35 @@ def people_first_empty_row
   (1..people_sheet.num_rows).find { |n| people_sheet[n, people_eventbrite_column] == '' }
 end
 
+# Money Sheet and Columns
+def money_sheet
+  @money_sheet ||= spreadsheet.worksheet_by_title('Money')
+end
+
+def money_date_column
+  @money_date_column ||= (1..money_sheet.num_cols).find { |n| money_sheet[1, n] == 'Date' }
+end
+
+def money_entity_column
+  @money_entity_column ||= (1..money_sheet.num_cols).find { |n| money_sheet[1, n] == 'Entity' }
+end
+
+def money_amount_column
+  @money_amount_column ||= (1..money_sheet.num_cols).find { |n| money_sheet[1, n] == 'Amount' }
+end
+
+def money_payment_type_column
+  @money_payment_type_column ||= (1..money_sheet.num_cols).find { |n| money_sheet[1, n] == 'Payment Type' }
+end
+
+def money_eventbrite_column
+  @money_eventbrite_column ||= (1..money_sheet.num_cols).find { |n| money_sheet[1, n] == 'Eventbrite ID' }
+end
+
+def money_first_empty_row
+  (1..money_sheet.num_rows).find { |n| money_sheet[n, money_eventbrite_column] == '' }
+end
+
 # Main Loop
 eventbrite_attendees.each do |a|
   next if a.cancelled # TODO: remove new cancelations
@@ -70,6 +99,23 @@ eventbrite_attendees.each do |a|
   people_sheet[attendee, people_sleeping_type_column] = a.ticket_class_name # TODO: group camping
   people_sheet[attendee, people_nights_column] = a.answers[0].answer # TODO: 2/3 instead of arrival day
   people_sheet[attendee, people_shirt_size_column] = a.answers[2].answer
+
+  # Add Payments
+  next if a.costs.base_price.value == 0
+
+  # Find existing payment
+  payment = (1..money_sheet.num_rows).find { |n| money_sheet[n, money_eventbrite_column] == a.id }
+
+  unless payment
+    payment = money_first_empty_row
+    money_sheet[payment, money_eventbrite_column] = a.id
+  end
+
+  money_sheet[payment, money_date_column] = DateTime.strptime(a.created).to_date.iso8601
+  money_sheet[payment, money_entity_column] = a.profile.name
+  money_sheet[payment, money_amount_column] = a.costs.base_price.major_value
+  money_sheet[payment, money_payment_type_column] = "Eventbrite"
 end
 
 people_sheet.save
+money_sheet.save
