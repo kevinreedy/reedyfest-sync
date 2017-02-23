@@ -101,7 +101,7 @@ eventbrite_attendees.each do |a|
   if a.ticket_class_name == 'Camping Thursday - Sunday' || a.ticket_class_name == 'Camping Friday - Sunday'
     people_sheet[attendee, people_sleeping_type_column] = 'Camping'
   else
-    people_sheet[attendee, people_sleeping_type_column] = a.ticket_class_name
+    people_sheet[attendee, people_sleeping_type_column] = a.ticket_class_name.sub(/^Cabin - /, '')
   end
 
   if a.answers[0].answer == 'Thursday'
